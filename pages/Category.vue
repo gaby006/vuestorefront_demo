@@ -91,8 +91,8 @@
               :style="{ '--index': i }"
               :title="productGetters.getName(product)"
               :image="productGetters.getCoverImage(product)"
-              :regular-price="$n(productGetters.getPrice(product).regular, 'currency')"
-              :special-price="productGetters.getPrice(product).special && $n(productGetters.getPrice(product).special, 'currency')"
+              :regular-price="productGetters.getPriceInPoints(product)"
+              :special-price="productGetters.getPriceInPoints(product)"
               :max-rating="5"
               :score-rating="productGetters.getAverageRating(product)"
               :show-add-to-cart-button="true"
@@ -217,6 +217,23 @@ import { onSSR } from '@vue-storefront/core';
 import LazyHydrate from 'vue-lazy-hydration';
 import cacheControl from './../helpers/cacheControl';
 import CategoryPageHeader from '~/components/CategoryPageHeader';
+
+
+productGetters.getPriceInPoints=(product)=>{
+
+	if(product.price.custom && product.price.custom.customFieldsRaw){
+
+
+	const value= product.price.custom.customFieldsRaw[0].value;
+	const currency=product.price.custom.customFieldsRaw[0].name;
+	
+	return value+" "+currency;
+	
+	}else{
+		return 'Not configured'; 
+	}
+
+};
 
 // TODO(addToCart qty, horizontal): https://github.com/vuestorefront/storefront-ui/issues/1606
 export default {

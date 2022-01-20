@@ -1,3 +1,4 @@
+const customQueries = require('./customQueries');
 
 module.exports = {
   integrations: {
@@ -35,7 +36,8 @@ module.exports = {
           en: ['en', 'de'],
           de: ['de', 'en']
         }
-      }
+      },
+	  customQueries,
     }
   }
 };

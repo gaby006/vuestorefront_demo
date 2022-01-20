@@ -25,8 +25,8 @@
         </div>
         <div class="product__price-and-rating">
           <SfPrice
-            :regular="$n(productGetters.getPrice(product).regular, 'currency')"
-            :special="productGetters.getPrice(product).special && $n(productGetters.getPrice(product).special, 'currency')"
+            :regular="productGetters.getPriceInPoints(product)"
+            :special="productGetters.getPriceInPoints(product)"
           />
           <div>
             <div class="product__rating">
@@ -232,6 +232,26 @@ import {
 import { onSSR } from '@vue-storefront/core';
 import LazyHydrate from 'vue-lazy-hydration';
 import cacheControl from './../helpers/cacheControl';
+import { createClient } from '~/plugins/contentful.js';
+
+  const client = createClient();
+
+
+  productGetters.getPriceInPoints=(product)=>{
+
+	if(product&&product.price&&product.price.custom && product.price.custom.customFieldsRaw){
+
+
+	const value= product.price.custom.customFieldsRaw[0].value;
+	const currency=product.price.custom.customFieldsRaw[0].name;
+	
+	return value+" "+currency;
+	
+	}else{
+		return 'Not configured'; 
+	}
+
+};
 
 export default {
   name: 'Product',
@@ -294,21 +314,39 @@ export default {
 
 
   const productPrice=computed(() => productGetters.getPrice(product.value));
+  const productId=computed(() => productGetters.getName(product.value));
+  console.log('Product price',productPrice);
+  
 
-    console.log('Product price: ',productPrice.value);
+/*
+   const items=client.getEntries({
+          content_type: "productPrice",
+          order: '-sys.createdAt',
+        }).then(( entries) => {
+          // return data that should be available
+          // in the template
+		  console.log('Entries',entries);
+          return {
+            posts: entries,
+          };
+        })
+        .catch(console.error);*/
+
+	
+	
     
 
     // TODO: Breadcrumbs are temporary disabled because productGetters return undefined. We have a mocks in data
-    const breadcrumbs = computed(() => productGetters.getBreadcrumbs ? productGetters.getBreadcrumbs(products.value) : props.fallbackBreadcrumbs);
+    //const breadcrumbs = computed(() => productGetters.getBreadcrumbs ? productGetters.getBreadcrumbs(products.value) : props.fallbackBreadcrumbs);
     const productGallery = computed(() => productGetters.getGallery(product.value).map(img => ({
       mobile: { url: img.small },
       desktop: { url: img.normal },
       big: { url: img.big },
       alt: product.value._name || product.value.name
     })));
-
+	
     onSSR(async () => {
-      await search({ id: route.value.params.id });
+	    await  search({ id: route.value.params.id });
       await searchRelatedProducts({ catId: [categories.value[0]], limit: 8 });
       await searchReviews({ productId: route.value.params.id });
     });

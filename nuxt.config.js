@@ -1,7 +1,14 @@
 import webpack from 'webpack';
 import theme from './themeConfig';
+import config from './contenful.config';
 
 export default {
+	env: {
+		CTF_SPACE_ID: config.CTF_SPACE_ID,
+		CTF_CDA_ACCESS_TOKEN: config.CTF_CDA_ACCESS_TOKEN,
+		CTF_PERSON_ID: config.CTF_PERSON_ID,
+		CTF_BLOG_POST_TYPE_ID: config.CTF_BLOG_POST_TYPE_ID,		
+  },
   mode: 'universal',
   server: {
     port: 3000,
@@ -45,7 +52,7 @@ export default {
     ['@vue-storefront/commercetools/nuxt', {
       i18n: { useNuxtI18nConfig: true }
     }],
-    ['@vue-storefront/nuxt', {
+	['@vue-storefront/nuxt', {
       coreDevelopment: true,
       useRawSource: {
         dev: [
@@ -55,7 +62,7 @@ export default {
         prod: [
           '@vue-storefront/commercetools',
           '@vue-storefront/core'
-        ]
+		 ]
       }
     }],
     ,['@vue-storefront/nuxt-theme'],
