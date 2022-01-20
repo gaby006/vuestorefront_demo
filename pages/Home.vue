@@ -3,13 +3,13 @@
     <LazyHydrate when-idle>
       <SfHero class="hero">
         <SfHeroItem
-          v-for="(hero, i) in heroes"
+          v-for="(hero, i) in posts"
           :key="i"
-          :title="hero.title"
-          :subtitle="hero.subtitle"
-          :background="hero.background"
-          :image="hero.image"
-          :class="hero.className"
+          :title="hero.fields.title"
+          :subtitle="hero.fields.subtitle"
+          :background="hero.fields.background"
+          :image="hero.fields.image.fields.file.url"
+          :class="hero.fields.className"
         />
       </SfHero>
     </LazyHydrate>
@@ -123,8 +123,41 @@ import NewsletterModal from '~/components/NewsletterModal.vue';
 import LazyHydrate from 'vue-lazy-hydration';
 import { useUiState } from '../composables';
 import cacheControl from './../helpers/cacheControl';
+import { createClient } from '~/plugins/contentful.js';
+import { onSSR } from '@vue-storefront/core';
+
+const client = createClient();
+
+const getHeroes=async () => {
+                return await client.getEntries({
+                content_type: "hero",
+                order: '-sys.createdAt',
+              }).then((val)=>{
+                console.log('Heroes from contentful',val.items);
+                return val.items;});
+            };
 
 export default {
+
+    asyncData() {
+      return Promise.all([
+       
+        // fetch all blog posts sorted by creation date
+        client.getEntries({
+          content_type: 'hero',
+          order: '-sys.createdAt',
+        }),
+      ])
+        .then(([ posts]) => {
+          // return data that should be available
+          // in the template
+          return {
+            posts: posts.items,
+          };
+        })
+        .catch(console.error);
+    },
+
   name: 'Home',
   middleware: cacheControl({
     'max-age': 60,
@@ -207,6 +240,19 @@ export default {
         isInWishlist: false
       }
     ]);
+
+
+let heroes=[];
+onSSR(async () => {
+  await getHeroes();
+});
+
+//heroes=getHeroes();
+
+console.log('heroes1 ',heroes);
+
+
+/*
     const heroes = [
       {
         title: 'Colorful summer dresses are already in store',
@@ -229,6 +275,9 @@ export default {
         image: '/homepage/bannerB.webp'
       }
     ];
+
+*/
+
     const banners = [
       {
         slot: 'banner-A',
