@@ -3,6 +3,9 @@ import theme from './themeConfig';
 import config from './contenful.config';
 
 export default {
+	  // Target: https://go.nuxtjs.dev/config-target
+  ssr: true,
+  target: "static",
 	env: {
 		CTF_SPACE_ID: config.CTF_SPACE_ID,
 		CTF_CDA_ACCESS_TOKEN: config.CTF_CDA_ACCESS_TOKEN,
