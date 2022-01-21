@@ -4,7 +4,10 @@ import config from './contenful.config';
 
 export default {
 	  // Target: https://go.nuxtjs.dev/config-target
-  ssr: true,
+  generate: {
+    fallback: true
+  },
+  ssr: false,
   target: "static",
 	env: {
 		CTF_SPACE_ID: config.CTF_SPACE_ID,
